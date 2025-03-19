@@ -64,6 +64,7 @@ public class UserView {
 
 				switch (input) {
 				case 1: insertUser(); break;
+				/*
 				case 2: selectAll(); break;
 				case 3: selectName(); break;
 				case 4: selectUser(); break;
@@ -71,6 +72,7 @@ public class UserView {
 				case 6: updateName(); break;
 				case 7: insertUser2(); break;
 				case 8: multiInsertUser(); break;
+				*/
 				case 0: System.out.println("\n[프로그램 종료]\n"); break;
 				default: System.out.println("\n[메뉴 번호만 입력하세요]\n");
 				}
@@ -93,5 +95,51 @@ public class UserView {
 
 	} // mainMenu() 종료
 
+	
+	/**
+	 * 1. User 등록 관련 View
+	 */
+	private void insertUser() throws Exception{
+		
+		System.out.println("\n=== 1. User 등록 ===\n");
+		
+		System.out.print("ID : ");
+		String userId = sc.next();
+		
+		System.out.print("PW : ");
+		String userPw = sc.next();
+		
+		System.out.print("Name : ");
+		String userName = sc.next();
+		
+		// 입력받은 값 3개를 한번에 묶어서 전달할 수 있도록
+		// User DTO 객체를 생성한 후 필드에 값을 세팅
+		User user = new User();
+		
+		// setter 이용
+		user.setUserId(userId);
+		user.setUserPw(userPw);
+		user.setUserName(userName);
+		
+		
+		// 서비스 호출(INSERT) 후 결과 반환(int, 결과 행의 개수)받기
+		int result = service.insertUser(user);
+		
+		// 반환된 결과에 따라 출력할 내용 선택
+		if(result > 0) {
+			System.out.println("\n" + userId + "사용자가 등록되었습니다.\n");
+			
+		} else {
+			System.out.println("\n***등록 실패***\n");
+			
+		}
+		
+	}
 
+
+	
+	
+	
+	
+	
 }

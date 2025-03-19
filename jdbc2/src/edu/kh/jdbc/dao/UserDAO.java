@@ -90,5 +90,47 @@ public class UserDAO {
 		
 		return user; // 결과 반환 (생성된 User 객체 또는 null)
 	}
+
+	/** 1. User 등록 DAO
+	 * @param conn : DB 연결 정보가 담겨있는 Connection 객체
+	 * @param user : 입력받은 id,pw,name이 세팅된 User 객체
+	 * @return INSERT 결과 행의 개수
+	 */
+	public int insertUser(Connection conn, User user) throws Exception {
+		
+		// SQL 수행 중 발생하는 예외를
+		// catch로 처리하지 않고, throws를 이용해서 호출부로 던져 처리
+		// -> catch 문 필요없다!
+		
+		// 1. 결과 저장용 변수 선언
+		int result = 0;
+		
+		try {
+			// 2. SQL 작성
+			String sql = """
+					INSERT INTO TB_USER 
+					VALUES(SEQ_USER_NO.NEXTVAL, ?, ?, ?, DEFAULT)""";
+			
+			// 3. PreparedStatement 객체 생성
+			pstmt = conn.prepareStatement(sql);
+			
+			// 4. ? (위치홀더) 알맞은 값 대입
+			pstmt.setString(1, user.getUserId());
+			pstmt.setString(2, user.getUserPw());
+			pstmt.setString(3, user.getUserName());
+			
+			// 5. SQL(INSERT) 수행(executeUpdate()) 후 결과(삽입된 행의 갯수) 반환 받기
+			result = pstmt.executeUpdate();
+			
+			
+		} finally {
+			// 6. 사용한 jdbc 객체 자원 반환(close)
+			close(pstmt);
+			
+		}
+		
+		// 결과 저장용 변수에 저장된 값 반환
+		return result;
+	}
 	
 }
