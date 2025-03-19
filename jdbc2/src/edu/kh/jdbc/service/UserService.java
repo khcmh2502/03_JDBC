@@ -175,6 +175,56 @@ public class UserService {
 		return result;
 		
 	}
+
+	/** 아이디 중복 확인 서비스
+	 * @param userId
+	 * @return count
+	 */
+	public int idCheck(String userId) throws Exception {
+		
+		Connection conn = JDBCTemplate.getConnection();
+		
+		int count = dao.idCheck(conn, userId);
+		
+		JDBCTemplate.close(conn);
+		
+		return count;
+	}
+
+	/** userList에 있는 모든 User 객체를 INSERT 서비스
+	 * @param userList
+	 * @return
+	 */
+	public int multiInsertUser(List<User> userList) throws Exception {
+		
+		// 다중 INSERT 방법
+		// 1) SQL 을 이용한 다중 INSERT
+		// 2) Java 반복문을 이용한 다중 INSERT (이거 사용!)
+		
+		Connection conn = JDBCTemplate.getConnection();
+		
+		int count = 0;  // 삽입 성공한 행의 개수 count
+		
+		// 1행씩 삽입
+		for(User user : userList) {
+			int result = dao.insertUser(conn, user);
+			count += result; // 삽입 성공한 행의 개수를 count 누적
+		}
+		
+		//count--;
+		
+		// 트랜잭션 제어 처리
+		// 전체 삽입 성공 시 commit / 아니면 rollback(일부 삽입, 전체 실패)
+		if(count == userList.size()) {
+			JDBCTemplate.commit(conn);
+		} else {
+			JDBCTemplate.rollback(conn);
+		}
+		
+		JDBCTemplate.close(conn);
+		
+		return count;
+	}
 	
 	
 	

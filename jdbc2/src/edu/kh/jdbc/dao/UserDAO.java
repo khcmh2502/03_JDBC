@@ -387,6 +387,43 @@ public class UserDAO {
 		
 		return result;
 	}
+
+	/** 아이디 중복 확인 DAO
+	 * @param conn
+	 * @param userId
+	 * @return count
+	 */
+	public int idCheck(Connection conn, String userId) throws Exception{
+		
+		int count = 0;
+		
+		try {
+			String sql = """
+					SELECT COUNT(*)
+					FROM TB_USER
+					WHERE USER_ID = ?
+					""";
+			
+			pstmt = conn.prepareStatement(sql);
+			pstmt.setString(1, userId);
+			
+			rs = pstmt.executeQuery();
+			
+			if(rs.next()) {
+				count = rs.getInt(1); // 조회된 컬럼 순서번호를 이용해 
+										// 컬럼값 얻어오기
+			}
+			
+			
+		}finally {
+			close(rs);
+			close(pstmt);
+			
+		}
+		
+		
+		return count;
+	}
 	
 	
 	
