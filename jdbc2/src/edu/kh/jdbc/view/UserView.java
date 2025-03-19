@@ -1,6 +1,7 @@
 package edu.kh.jdbc.view;
 
 import java.util.InputMismatchException;
+import java.util.List;
 import java.util.Scanner;
 
 import edu.kh.jdbc.dto.User;
@@ -64,12 +65,12 @@ public class UserView {
 
 				switch (input) {
 				case 1: insertUser(); break;
-				/*
 				case 2: selectAll(); break;
 				case 3: selectName(); break;
 				case 4: selectUser(); break;
 				case 5: deleteUser(); break;
 				case 6: updateName(); break;
+				/*
 				case 7: insertUser2(); break;
 				case 8: multiInsertUser(); break;
 				*/
@@ -96,6 +97,137 @@ public class UserView {
 	} // mainMenu() 종료
 
 	
+	/**
+	 * 6. ID, PW가 일치하는 회원(SELECT)이 있을 경우 이름 수정(UPDATE)
+	 */
+	private void updateName() throws Exception{
+		
+		System.out.println("\n===ID, PW가 일치하는 회원이 있을 경우 이름 수정===\n");
+		
+		System.out.print("ID : ");
+		String userId = sc.next();
+		
+		System.out.print("PW : ");
+		String userPw = sc.next();
+		
+		// 입력받은 ID, PW가 일치하는 회원이 존재하는지 조회(SELECT)
+		// -> USER_NO 조회
+		int userNo = service.selectUserNo(userId, userPw);
+		
+		if(userNo == 0) { // 조회 결과 없음
+			System.out.println("아이디, 비밀번호가 일치하는 사용자가 없음");
+			return;
+		}
+		
+		// 조회 결과 있음
+		System.out.print("수정할 이름 입력 : ");
+		String userName = sc.next();
+		
+		// 위에서 조회된 회원(userNo)의 이름 
+		//  서비스 호출(UPDATE) 후 결과 반환(int)받기
+		int result = service.updateName(userName, userNo);
+		
+		if(result > 0) System.out.println("수정 성공!!!");
+		else			System.out.println("수정 실패...");
+		
+		
+	}
+
+	/**
+	 * 5. USER_NO 를 입력받아 일치하는 User 삭제
+	 */
+	private void deleteUser() throws Exception {
+		
+		System.out.println("\n===5. USER_NO 를 입력받아 일치하는 User 삭제===\n");
+		
+		System.out.print("삭제할 사용자 번호 입력 : ");
+		int input = sc.nextInt();
+		
+		int result = service.deleteUser(input);
+		
+		if(result > 0) System.out.println("삭제 성공");
+		else 	System.out.println("사용자 번호가 일치하는 User 가 존재하지 않음");
+		
+	}
+
+	/**
+	 * 4. USER_NO를 입력받아 일치하는 User 조회
+	 */
+	private void selectUser() throws Exception{
+		
+		System.out.println("\n===4. USER_NO를 입력받아 일치하는 User 조회===\n");
+		
+		System.out.print("사용자 번호 입력 : ");
+		int input = sc.nextInt();
+		
+		// 사용자 번호 == PK == 중복이 있을 수 없다!
+		// == 일치하는 사용자가 있다면 딱 1행만 조회된다
+		// -> 1행의 조회 결과를 담기 위해서 User DTO 객체 1개 사용
+		User user = service.selectUser(input);
+		
+		// 조회결과가 없으면 null, 있으면 null 아님
+		if(user == null) {
+			System.out.println("USER_NO가 일치하는 회원 없음");
+			return;
+		}
+		
+		System.out.println(user);
+		
+		
+	}
+
+	/**
+	 * 3. User 중 이름에 검색어가 포함된 회원 조회
+	 */
+	private void selectName() throws Exception {
+		
+		System.out.println("\n=== User 중 이름에 검색어가 포함된 회원 조회===\n");
+		
+		System.out.print("검색어 입력 : ");
+		String keyword = sc.next();
+		
+		// 서비스 호출후 결과 반환받기
+		List<User> searchList = service.selectName(keyword);
+		
+		if(searchList.isEmpty()) {
+			System.out.println("검색 결과 없음");
+			return;
+		}
+		
+		for(User user : searchList) {
+			System.out.println(user);
+		}
+		
+		
+	}
+
+	/**
+	 * 2. User 전체 조회 관련 View (SELECT)
+	 */
+	private void selectAll() throws Exception {
+		
+		System.out.println("\n=== 2. User 전체 조회 ===\n");
+		
+		// 서비스 호출(SELECT) 후 결과(List<User>) 반환받기
+		List<User> userList = service.selectAll();
+		
+		// 결과에 따라 처리하기
+		
+		// 조회 결과가 없을 경우
+		if(userList.isEmpty()) { // userList가 비어있다면
+			System.out.println("\n*** 조회 결과가 없습니다 ***\n");
+			return;
+		}
+		
+		// 있을 경우 향상된 for문 이용해서 
+		// userList에 있는 User 객체 출력
+		for(User user : userList) {
+			System.out.println(user);
+		}
+		
+		
+	}
+
 	/**
 	 * 1. User 등록 관련 View
 	 */
